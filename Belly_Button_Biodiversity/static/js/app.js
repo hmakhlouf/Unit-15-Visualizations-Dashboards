@@ -9,9 +9,9 @@ function buildMetadata(sample) {
 
   // Use `d3.json` to fetch the metadata for a sample
 
-  const url_n = `/metadata/${sample}`;
+  let url = `/metadata/${sample}`;
 
-  d3.json(url_n).then(function(data) {
+  d3.json(url).then(function(data) {
     console.log(data);
   
 
@@ -27,9 +27,9 @@ function buildMetadata(sample) {
     // tags for each key-value in the metadata.
 
   for (let [key, value] of Object.entries(metadata)) {
-      select_panel.append(h6).text(`${key}: ${value}`);
+      select_panel.append("h6").text(`${key}: ${value}`);
 
-
+  console.log(select_panel)
   }
   });
 
@@ -42,22 +42,24 @@ function buildCharts(sample) {
 
 // @TODO: Use `d3.json` to fetch the sample data for the plots
 
-  const url = `/samples/${sample}`;
+  const url_n = `/samples/${sample}`;
 
-  d3.json(url).then(function(data) {
-    console.log(data);
+  d3.json(url_n).then(function(_sample) {
+    console.log(_sample);
   
   
 
 //     @TODO: Build a Bubble Chart using the sample data
 
 var trace1 = {
-  x: sample_data.otu_id.values.tolist(),
-  y: sample_data[sample].values.tolist(),
+
+  x: _sample["otu_ids"],
+  y: _sample["sample_values"],
+  "text": _sample["otu_labels"], 
   mode: 'markers',
   marker: {
-    size: sample_data[sample].values.tolist(),
-    color: sample_data.otu_id.values.tolist()
+    size: _sample["sample_values"],
+    color: _sample["otu_ids"],
   }
 };
 
@@ -76,14 +78,18 @@ Plotly.newPlot('bubble', data, layout);
 //    HINT: You will need to use slice() to grab the top 10 sample_values,
 //    otu_ids, and labels (10 each).
 
-data = [{
-  "values": sample_data[sample].values.tolist().slice(0, 10),
-  "labels": sample_data.otu_id.values.tolist().slice(0, 10),
-  "text": sample_data.otu_label.tolist().slice(0, 10),
+data1 = [{
+  "values": _sample["sample_values"].slice(0, 10),
+  "labels": _sample["otu_ids"].slice(0, 10),
+  "text": _sample["otu_labels"].slice(0, 10),
   "type": "pie"}]
 
+console.log(data1);
+
 var layout = {
-  title: "Pie chart"}
+  title: "Pie chart",
+    
+  }
 
 
 Plotly.plot("pie", data, layout);
